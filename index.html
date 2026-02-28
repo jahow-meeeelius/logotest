@@ -86,12 +86,10 @@
 
   let isDragging = false
   let prevX = 0
-  let autoRotate = true
   let velocityX = 0
 
   renderer.domElement.addEventListener("pointerdown", (e) => {
     isDragging = true
-    autoRotate = false
     prevX = e.clientX
     velocityX = 0
     document.body.classList.add("dragging")
@@ -108,7 +106,6 @@
   window.addEventListener("pointerup", () => {
     isDragging = false
     document.body.classList.remove("dragging")
-    setTimeout(() => { autoRotate = true }, 1500)
   })
 
   const animate = () => {
@@ -116,12 +113,17 @@
     if (model && modelReady) {
       if (isDragging) {
         // driven by pointermove
-      } else if (!autoRotate) {
-        velocityX *= 0.95
-        model.rotation.y += velocityX
-        if (Math.abs(velocityX) < 0.0001) velocityX = 0
       } else {
-        model.rotation.y += 0.0012
+        if (Math.abs(velocityX) > 0.0001) {
+          // Coast with momentum after drag
+          velocityX *= 0.95
+          model.rotation.y += velocityX
+        } else {
+          // Velocity decayed — lerp back to front-facing
+          velocityX = 0
+          model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, 0, 0.002)
+          // model.rotation.y += 0.0012  // RE-ENABLE for auto-spin instead of return-to-front
+        }
       }
     }
     renderer.render(scene, camera)
