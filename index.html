@@ -124,10 +124,14 @@
     prevX = e.clientX
   })
 
-  window.addEventListener("pointerup", () => {
+  function stopDrag() {
     isDragging = false
     document.body.classList.remove("dragging")
-  })
+  }
+
+  window.addEventListener("pointerup", stopDrag)
+  window.addEventListener("pointercancel", stopDrag)
+  window.addEventListener("pointerleave", stopDrag)
 
   const animate = () => {
     requestAnimationFrame(animate)
