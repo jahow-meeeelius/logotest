@@ -2,16 +2,31 @@
 <html>
 <head>
   <meta charset="utf-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <style>
     * { margin: 0; padding: 0; }
-    body { background: transparent; overflow: hidden; }
+    body { background: transparent; overflow: hidden; cursor: grab; }
+    body.dragging { cursor: grabbing; }
     canvas { display: block; }
+    #loader {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #loader div {
+      width: 24px; height: 24px;
+      border: 2px solid #ccc;
+      border-top-color: #111;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+  <div id="loader"><div></div></div>
 <script type="module">
-  import * as THREE from "https://esm.sh/three@0.160.0"
-  import { GLTFLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -33,6 +48,7 @@
   let model
   const loader = new GLTFLoader()
   loader.load("./Melius9.glb", (gltf) => {
+    document.getElementById("loader").style.display = "none"
     model = gltf.scene
     const box = new THREE.Box3().setFromObject(model)
     const center = box.getCenter(new THREE.Vector3())
@@ -50,12 +66,40 @@
     scene.add(model)
   })
 
+  // --- Drag to rotate ---
+  let isDragging = false
+  let prevX = 0
+  let autoRotate = true
+  let velocityX = 0
+
+  renderer.domElement.addEventListener("pointerdown", (e) => {
+    isDragging = true
+    autoRotate = false
+    prevX = e.clientX
+    velocityX = 0
+    document.body.classList.add("dragging")
+  })
+
+  window.addEventListener("pointermove", (e) => {
+    if (!isDragging || !model) return
+    const deltaX = e.clientX - prevX
+    velocityX = deltaX * 0.01
+    model.rotation.y += velocityX
+    prevX = e.clientX
+  })
+
+  window.addEventListener("pointerup", () => {
+    isDragging = false
+    document.body.classList.remove("dragging")
+    setTimeout(() => { autoRotate = true }, 1500)
+  })
+
   const animate = () => {
     requestAnimationFrame(animate)
-    if (model) model.rotation.y += 0.0012
-    renderer.render(scene, camera)
-  }
-  animate()
-</script>
-</body>
-</html>
+    if (model) {
+      if (isDragging) {
+        // driven by pointermove
+      } else if (!autoRotate) {
+        velocityX *= 0.95
+        model.rotation.y += velocityX
+        if (
