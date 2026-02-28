@@ -36,8 +36,11 @@
   const scene = new THREE.Scene()
   function getFov() {
     const aspect = window.innerWidth / window.innerHeight
-    // Scale FOV up on narrow screens so model fits
-    return Math.min(15 / aspect, 40)
+    // Base FOV of 15 was designed for ~2:1 aspect ratio (600x300)
+    // Scale it proportionally when aspect changes
+    const baseFov = 15
+    const baseAspect = 2
+    return Math.min(baseFov * (baseAspect / aspect), 45)
   }
 
   const camera = new THREE.PerspectiveCamera(getFov(), window.innerWidth / window.innerHeight, 0.1, 100)
