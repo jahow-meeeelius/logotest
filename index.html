@@ -48,8 +48,12 @@
   updateCamera()
 
   window.addEventListener("resize", () => {
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    updateCamera()
+    const w = window.innerWidth
+    const h = window.innerHeight
+    renderer.setSize(w, h)
+    camera.aspect = w / h
+    camera.fov = getFov()
+    camera.updateProjectionMatrix()
   })
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.3))
@@ -135,4 +139,7 @@
     }
     renderer.render(scene, camera)
   }
-  anima
+  animate()
+</script>
+</body>
+</html>
