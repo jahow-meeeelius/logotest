@@ -32,7 +32,7 @@
 
   let model
   const loader = new GLTFLoader()
-  loader.load("./Melius.glb", (gltf) => {
+  loader.load("./Melius9.glb", (gltf) => {
     model = gltf.scene
     const box = new THREE.Box3().setFromObject(model)
     const center = box.getCenter(new THREE.Vector3())
