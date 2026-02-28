@@ -36,12 +36,18 @@
 
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.1, 100)
-  camera.position.set(0, 0, 12)
 
+  function updateCamera() {
+    const aspect = window.innerWidth / window.innerHeight
+    camera.aspect = aspect
+    camera.position.z = aspect < 1 ? 12 / aspect : 12
+    camera.updateProjectionMatrix()
+  }
+
+  updateCamera()
   window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight)
-    camera.aspect = window.innerWidth / window.innerHeight
-    camera.updateProjectionMatrix()
+    updateCamera()
   })
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.1))
@@ -129,7 +135,7 @@
           } else {
             model.rotation.y = 0
           }
-          // model.rotation.y += 0.0012  // RE-ENABLE for auto-spin instead of return-to-front
+          // model.rotation.y += 0.0012  // RE-ENABLE for auto-spin
         }
       }
     }
