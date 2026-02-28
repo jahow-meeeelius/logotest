@@ -46,25 +46,37 @@
   scene.add(fill)
 
   let model
+  let modelReady = false
+
   const loader = new GLTFLoader()
-  loader.load("./Melius9.glb", (gltf) => {
-    document.getElementById("loader").style.display = "none"
-    model = gltf.scene
-    const box = new THREE.Box3().setFromObject(model)
-    const center = box.getCenter(new THREE.Vector3())
-    model.position.sub(center)
-    model.traverse((child) => {
-      if (child.isMesh) {
-        child.material.roughness = 0.0
-        child.material.metalness = 1.0
-        child.material.color.set("#101010")
-        child.material.envMapIntensity = 2.0
-        child.material.needsUpdate = true
-      }
-    })
-    model.rotation.y = Math.PI
-    scene.add(model)
-  })
+  loader.load(
+    "./Melius9.glb",
+    (gltf) => {
+      document.getElementById("loader").style.display = "none"
+      model = gltf.scene
+      const box = new THREE.Box3().setFromObject(model)
+      const center = box.getCenter(new THREE.Vector3())
+      model.position.sub(center)
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.material.roughness = 0.0
+          child.material.metalness = 1.0
+          child.material.color.set("#101010")
+          child.material.envMapIntensity = 2.0
+          child.material.needsUpdate = true
+        }
+      })
+      model.rotation.y = Math.PI
+      scene.add(model)
+      modelReady = true
+    },
+    undefined,
+    (error) => {
+      console.error("GLB load error:", error)
+      document.getElementById("loader").innerHTML =
+        "<p style='color:#999;font-size:12px;font-family:sans-serif'>Failed to load model</p>"
+    }
+  )
 
   // --- Drag to rotate ---
   let isDragging = false
@@ -96,7 +108,7 @@
 
   const animate = () => {
     requestAnimationFrame(animate)
-    if (model) {
+    if (model && modelReady) {
       if (isDragging) {
         // driven by pointermove
       } else if (!autoRotate) {
