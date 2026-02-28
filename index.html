@@ -34,25 +34,12 @@
   document.body.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
-
-  const camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.1, 1000)
-
-  function updateCamera() {
-    const w = window.innerWidth
-    const h = window.innerHeight
-    camera.aspect = w / h
-    camera.position.z = Math.max(12, 12 * (1.8 / (w / h)))
-    camera.updateProjectionMatrix()
-  }
-
-  updateCamera()
+  const camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.1, 100)
+  camera.position.set(0, 0, 12)
 
   window.addEventListener("resize", () => {
-    const w = window.innerWidth
-    const h = window.innerHeight
-    renderer.setSize(w, h)
-    camera.aspect = w / h
-    camera.fov = getFov()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
   })
 
