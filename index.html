@@ -123,7 +123,7 @@
           const diff = model.rotation.y
           if (Math.abs(diff) > 0.001) {
             // Constant-speed return to front, very slight ease near 0
-            model.rotation.y -= diff * 0.05
+            model.rotation.y -= diff * 0.03
           } else {
             // Close enough — snap exactly to front
             model.rotation.y = 0
