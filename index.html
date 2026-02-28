@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
+  <link rel="preconnect" href="https://esm.sh" crossorigin />
   <style>
     * { margin: 0; padding: 0; }
     body { background: transparent; overflow: hidden; cursor: grab; }
@@ -24,8 +25,8 @@
 <body>
   <div id="loader"><div></div></div>
 <script type="module">
-  import * as THREE from "./three.module.js"
-  import { GLTFLoader } from "./GLTFLoader.js"
+  import * as THREE from "https://esm.sh/three@0.160.0"
+  import { GLTFLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -33,9 +34,9 @@
   document.body.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
-
   function getFov() {
     const aspect = window.innerWidth / window.innerHeight
+    // Scale FOV up on narrow screens so model fits
     return Math.min(15 / aspect, 40)
   }
 
@@ -83,7 +84,6 @@
       model.rotation.y = 0
       scene.add(model)
       modelReady = true
-      animate()
     },
     undefined,
     (error) => {
@@ -120,7 +120,7 @@
     setTimeout(() => { autoRotate = true }, 1500)
   })
 
-  function animate() {
+  const animate = () => {
     requestAnimationFrame(animate)
     if (model && modelReady) {
       if (isDragging) {
@@ -135,6 +135,7 @@
     }
     renderer.render(scene, camera)
   }
+  animate()
 </script>
 </body>
 </html>
