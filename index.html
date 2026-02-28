@@ -28,18 +28,19 @@
   import * as THREE from "https://esm.sh/three@0.160.0"
   import { GLTFLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
   import { RoomEnvironment } from "https://esm.sh/three@0.160.0/examples/jsm/environments/RoomEnvironment.js"
-  
+
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
   document.body.appendChild(renderer.domElement)
 
+  const scene = new THREE.Scene()
+
   const pmremGenerator = new THREE.PMREMGenerator(renderer)
   pmremGenerator.compileEquirectangularShader()
-  const envTexture = pmremGenerator.fromScene(new THREE.RoomEnvironment()).texture
+  const envTexture = pmremGenerator.fromScene(new RoomEnvironment()).texture
   scene.environment = envTexture
-  
-  const scene = new THREE.Scene()
+
   const camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.1, 100)
   camera.position.set(0, 0, 12)
 
@@ -59,8 +60,7 @@
   const rim = new THREE.DirectionalLight(0xffffff, 2.0)
   rim.position.set(-5, 2, -5)
   scene.add(rim)
-  
-  
+
   let model
   let modelReady = false
 
@@ -125,26 +125,6 @@
         // driven by pointermove
       } else {
         if (Math.abs(velocityX) > 0.0001) {
-          // Coast with momentum after drag
           velocityX *= 0.95
           model.rotation.y += velocityX
-        } else {
-          velocityX = 0
-          const diff = model.rotation.y
-          if (Math.abs(diff) > 0.001) {
-            // Constant-speed return to front, very slight ease near 0
-            model.rotation.y -= diff * 0.03
-          } else {
-            // Close enough — snap exactly to front
-            model.rotation.y = 0
-          }
-          // model.rotation.y += 0.0012  // RE-ENABLE for auto-spin instead of return-to-front
-        }
-      }
-    }
-    renderer.render(scene, camera)
-  }
-  animate()
-</script>
-</body>
-</html>
+        } el
